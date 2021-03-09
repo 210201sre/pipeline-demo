@@ -11,7 +11,6 @@ pipeline {
 
         stage('Build') {
             steps {
-                sh 'env'
                 sh 'chmod +x mvnw && ./mvnw spring-boot:build-image'
                 sh 'docker tag $MAVEN_IMAGE_NAME $DOCKER_IMAGE_NAME'
                 script {
