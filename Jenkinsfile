@@ -29,7 +29,7 @@ pipeline {
                     docker.withRegistry('https://registry.hub.docker.com', 'docker-jenkins-token') {
                         // These are the image tags
                         app.push('latest')
-                        app.push('${env.BUILD_NUMBER}')
+                        // app.push('${env.BUILD_NUMBER}')
                         app.push('${env.GIT_COMMIT}')
                     }
                 }
