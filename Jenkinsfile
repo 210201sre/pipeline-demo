@@ -1,4 +1,5 @@
 pipeline {
+    // Author: Matthew Oberlies
     agent any
     environment {
         // Can declare different environment variables to be used specifically within this pipeline
