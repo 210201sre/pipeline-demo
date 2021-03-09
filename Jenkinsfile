@@ -11,6 +11,7 @@ pipeline {
 
         stage('Build') {
             steps {
+                sh 'env'
                 sh 'chmod +x mvnw && ./mvnw spring-boot:build-image'
                 sh 'docker tag $MAVEN_IMAGE_NAME $DOCKER_IMAGE_NAME'
                 script {
@@ -29,8 +30,8 @@ pipeline {
                     docker.withRegistry('https://registry.hub.docker.com', 'docker-jenkins-token') {
                         // These are the image tags
                         app.push('latest')
-                        // app.push('${env.BUILD_NUMBER}')
-                        app.push('${env.GIT_COMMIT}')
+                        app.push('${env.BUILD_NUMBER}')
+                        // app.push('${env.GIT_COMMIT}')
                     }
                 }
             }
