@@ -20,10 +20,10 @@ pipeline {
         }
 
         stage('Push Docker Image') {
-            when {
-                // Only execute the Docker Push stage if we are on the master branch
-                branch 'master'
-            }
+            // when {
+            //     // Only execute the Docker Push stage if we are on the master branch
+            //     branch 'master'
+            // }
             steps {
                 script {
                     docker.withRegistry('https://registry.hub.docker.com', 'docker-jenkins-token') {
