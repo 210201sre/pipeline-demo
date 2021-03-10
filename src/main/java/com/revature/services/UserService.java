@@ -25,6 +25,11 @@ public class UserService {
 		return userDAO.findAll();
 	}
 	
+	public User findByUsername(String username) {
+		return userDAO.findByUsername(username)
+				.orElseThrow(() -> new UserNotFoundException(String.format("No user with username = %s", username)));
+	}
+	
 	public User findById(int id) {
 		return userDAO.findById(id)
 				.orElseThrow(() -> new UserNotFoundException(String.format("No user with id = %d", id)));
