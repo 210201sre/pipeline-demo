@@ -22,7 +22,7 @@ pipeline {
         stage('Sonar Quality Analysis') {
             steps {
                 withSonarQubeEnv(credentialsId: 'sonar-token', installationName: 'sonarcloud') {
-                    sh 'mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar'
+                    sh './mvnw -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar'
                 }
             }
         }
