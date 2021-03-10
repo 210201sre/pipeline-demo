@@ -57,11 +57,11 @@ pipeline {
         }
     }
 
-    post {
-        always {
+    // post {
+    //     always {
             // Can use the previously created qualitygate variable
             // Perhaps include the results as part of a discordSend instruction
             // Might use another "script" scope
-        }
-    }
+    //     }
+    // }
 }
