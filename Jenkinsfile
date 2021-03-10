@@ -19,6 +19,22 @@ pipeline {
             }
         }
 
+        stage('Sonar Quality Analysis') {
+            steps {
+                withSonarQubeEnv(credentialsId: 'sonar-token', installationName: 'sonarcloud') {
+                    sh 'mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar'
+                }
+            }
+        }
+
+        stage('Wait for Quality Gate') {
+            steps {
+                timeout(time: 30, unit: 'MINUTES') {
+                    def qualitygate = waitForQualityGate abortPipeline: true
+                }
+            }
+        }
+
         stage('Push Docker Image') {
             // According to the documentation, this branch instruction only works
             // with the Multi-Branch Pipeline Jenkins Job type
@@ -38,6 +54,14 @@ pipeline {
                     }
                 }
             }
+        }
+    }
+
+    post {
+        always {
+            // Can use the previously created qualitygate variable
+            // Perhaps include the results as part of a discordSend instruction
+            // Might use another "script" scope
         }
     }
 }

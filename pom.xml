@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
 		<version>2.4.3</version>
-		<relativePath/> <!-- lookup parent from repository -->
+		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.revature</groupId>
 	<artifactId>log-aggregation-demo</artifactId>
@@ -15,6 +16,22 @@
 	<description>Demo project for Spring Boot</description>
 	<properties>
 		<java.version>1.8</java.version>
+		
+		<!-- Obtained from Sonarcloud which includes the configuration for this project's analysis -->
+		<sonar.projectKey>210201sre_pipeline-demo</sonar.projectKey>
+		<sonar.organization>210201sre</sonar.organization>
+		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
+		
+		<!-- We can configure some additional properties for test coverage reports -->
+		<coverage.reports.dir>target/coverage-reports</coverage.reports.dir>
+		<sonar.coverage.jacoco.xmlReportPaths>target/site/jacoco/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
+		
+		<!-- This configuration excludes certain packages from being analyzed -->
+		<!-- This is helpful because Project2 only has requirements for test coverage of the services package -->
+		<!-- In industry, we would keep most packages. We would primarily exclude only the models package -->
+		<!-- The models package does not have any logic in it, it is designed just to store data -->
+		<!-- We don't have to unit test our models, because there is no logic -->
+		<sonar.exclusions>src/**/models/**/*, src/**/controllers/**/*, src/**/repositories/**/*</sonar.exclusions>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -37,23 +54,23 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
-		
+
 		<!-- The below dependencies must be added manually -->
 		<!-- https://mvnrepository.com/artifact/org.fluentd/fluent-logger -->
 		<dependency>
-		    <groupId>org.fluentd</groupId>
-		    <artifactId>fluent-logger</artifactId>
-		    <version>0.3.4</version>
+			<groupId>org.fluentd</groupId>
+			<artifactId>fluent-logger</artifactId>
+			<version>0.3.4</version>
 		</dependency>
-		
-		
+
+
 		<!-- https://mvnrepository.com/artifact/com.sndyuk/logback-more-appenders -->
 		<dependency>
-		    <groupId>com.sndyuk</groupId>
-		    <artifactId>logback-more-appenders</artifactId>
-		    <version>1.8.4</version>
+			<groupId>com.sndyuk</groupId>
+			<artifactId>logback-more-appenders</artifactId>
+			<version>1.8.4</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
@@ -97,6 +114,34 @@
 						</exclude>
 					</excludes>
 				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<version>0.8.4</version>
+				<configuration>
+					<outputDirectory>${coverage.reports.dir}</outputDirectory>
+					<excludes>
+						<!-- Both the sonar configuration above, and jacoco-maven-plugin need the exclusions -->
+						<exclude>**/models/**</exclude>
+						<exclude>**/controllers/**</exclude>
+					</excludes>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>prepare-agent</goal>
+						</goals>
+					</execution>
+					
+					<execution>
+						<id>report</id>
+						<phase>test</phase>
+						<goals>
+							<goal>report</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>
