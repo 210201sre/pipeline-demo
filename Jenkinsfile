@@ -20,10 +20,13 @@ pipeline {
         }
 
         stage('Push Docker Image') {
-            when {
-                // Only execute the Docker Push stage if we are on the master branch
-                branch 'master'
-            }
+            // According to the documentation, this branch instruction only works
+            // with the Multi-Branch Pipeline Jenkins Job type
+            // This particular one, is only the Pipeline type  
+            // when {
+            //     // Only execute the Docker Push stage if we are on the master branch
+            //     branch 'master'
+            // }
             steps {
                 script {
                     docker.withRegistry('https://registry.hub.docker.com', 'docker-jenkins-token') {
