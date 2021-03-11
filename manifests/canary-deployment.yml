@@ -1,0 +1,68 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: log-aggregation-canary
+  namespace: matthew-oberlies
+  labels:
+    app: log-aggregation
+spec:
+  replicas: $CANARY_REPLICAS
+  # Due to the enableConfigSubstitution property
+  # We can inject information into the yml from our Jenkins environment variables
+  selector:
+    matchLabels:
+      app: log-aggregation
+      track: canary
+      # This 'track' label will be used to differentiate the pods from
+      # the production system vs the canary
+  template:
+    metadata:
+      labels:
+        app: log-aggregation
+        track: canary
+    spec:
+      volumes:
+      - name: config
+        configMap:
+          name: fluent-conf
+      containers:
+      - name: fluentd
+        ports:
+        - containerPort: 24224
+        image: grafana/fluent-plugin-loki:latest
+        imagePullPolicy: IfNotPresent # Optional, since this is already the default value
+        # livenessProbe: # Perhaps with more research we could identify a URL to use for these probes
+        # readinessProbe:
+        env:
+        - name: LOKI_URL
+          value: http://loki:3100
+        volumeMounts:
+        - name: config
+          mountPath: /fluentd/etc/fluent.conf
+          # mountPath is the path inside the container that we will mount to
+          # the destination
+          subPath: fluent.conf
+          # subPath is the path inside the volume that we are mounting from
+          # the source
+      - name: project1
+        image: $DOCKER_IMAGE_NAME:$GIT_COMMIT
+        ports:
+        - containerPort: 8080
+        env:
+        - name: DB_URL
+          valueFrom:
+            secretKeyRef:
+              name: matt-db-credentials
+              key: url
+        - name: DB_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: matt-db-credentials
+              key: username
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: matt-db-credentials
+              key: password
+        imagePullPolicy: Always
+        

@@ -57,6 +57,31 @@ pipeline {
                 }
             }
         }
+
+        stage('Canary Deployment') {
+            environment {
+                CANARY_REPLICAS = 1
+                // This will represent the number of canary instances that we will create
+                // Our Service that is configured in the cluster already will include this
+                // this canary instance when it routes traffic
+
+                // For example, if our original deployment had 4 replicas
+                // And we create 1 canary replica
+
+                // Our canary will receive 20% of the total traffic (1 out of 5)
+            }
+            steps {
+                kubernetesDeploy(
+                    kubeconfigId: 'kubeconfig-sre',
+                    // This is the ID of the kuebconfig credentials we made
+                    enableConfigSubstitution: true,
+                    // Is a very convenient property
+                    // Allows our kubernetes manifests to interpolate information
+                    // from our environment variables
+                    configs: 'manifests/canary-deployment.yml'
+                )
+            }
+        }
     }
 
     // post {
