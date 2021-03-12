@@ -73,12 +73,44 @@ pipeline {
             steps {
                 kubernetesDeploy(
                     kubeconfigId: 'kubeconfig-sre',
-                    // This is the ID of the kuebconfig credentials we made
+                    // This is the ID of the kubeconfig credentials we made
                     enableConfigSubstitution: true,
                     // Is a very convenient property
                     // Allows our kubernetes manifests to interpolate information
                     // from our environment variables
                     configs: 'manifests/canary-deployment.yml'
+                )
+            }
+        }
+
+        stage('Production Deployment') {
+            environment {
+                CANARY_REPLICAS = 0
+            }
+
+            steps {
+                // Some "button press"
+                input 'Deploy to Production?'
+                // if(response == 'NO') {
+
+                // }
+                // Effectively a yes/no prompt in Jenkins
+                // milestone(1) // Comes from a separate plugin
+                // Would help with many builds happening before the previous one finishes
+                // If a new version/build passes an older version/build, then just discard the older one
+
+                // Scale down the canary
+                kubernetesDeploy(
+                    kubeconfigId: 'kubeconfig-sre',
+                    enableConfigSubstitution: true,
+                    configs: 'manifests/canary-deployment.yml'
+                )
+
+                // Scale up the new production version
+                kubernetesDeploy(
+                    kubeconfigId: 'kubeconfig-sre',
+                    enableConfigSubstitution: true,
+                    configs: 'manifests/production-deployment.yml'
                 )
             }
         }
